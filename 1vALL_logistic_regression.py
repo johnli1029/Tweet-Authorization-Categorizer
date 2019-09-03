@@ -33,7 +33,7 @@ def predict(vector):
     global classifier_dict
     prediction = '1'
     max_proba = -1
-    for label, clf in classifier_dict.items():
+    for label, clf in classifier_dict:
         proba = clf.predict_proba(vector)[0][1]
         if proba > max_proba:
             max_proba = proba
@@ -51,7 +51,14 @@ if __name__ == '__main__':
     print(df.shape)
     print(x_test_df.shape)
 
+
     df.user_id = df.user_id.apply(str)
+    # y_train = df.user_id
+    # SAMPLE_THRESHOLD = 50
+    # CLASS_DISTRO = y_train.value_counts()
+    # LABELS = CLASS_DISTRO[CLASS_DISTRO > SAMPLE_THRESHOLD].index
+    # print("{} Classifiers to be trained".format(len(LABELS)))
+    
     df.tweet = df.tweet.apply(pre_processing)
     x_test_df.tweet = x_test_df.tweet.apply(pre_processing)
 
@@ -71,7 +78,7 @@ if __name__ == '__main__':
     y_train = df.user_id
 
     # Set training granularity
-    SAMPLE_THRESHOLD = 250
+    SAMPLE_THRESHOLD = 50
     CLASS_DISTRO = y_train.value_counts()
     LABELS = CLASS_DISTRO[CLASS_DISTRO > SAMPLE_THRESHOLD].index
     SAMPLE_AMOUNT = y_train.shape[0]
