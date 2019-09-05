@@ -11,9 +11,23 @@ from sklearn.metrics import accuracy_score
 from multiprocessing import Pool
 
 # IMPORTANT: Tweets Preprocessing
+
+
 def pre_processing(t):
     HTTP_URL_PATTERN = r'((http|ftp|https):\/\/)?([\w-]+(?:(?:\.[\w-]{2,})+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?'
-    t = re.sub(HTTP_URL_PATTERN, '', t)
+    t = t.strip()
+    t = re.sub(HTTP_URL_PATTERN, ' HAVELINK ', t)  # Increase URL weight
+    t = re.sub(r'@handle', ' ATSOMEBODY ', t)  # Deal with @handle
+    t = re.sub(r'^RT', ' APURERETWEET ', t)
+    t = re.sub(r'RT(?!\w)', ' WITHARETWEET ', t)
+
+    # Find hashtag and emphasize it
+    m = re.search(r'#(?P<hashtag>\w+?)\b', t)
+    while m is not None:
+        hashtag = m.group('hashtag')
+        t = re.sub(r'#'+hashtag, (' '+hashtag+' ')*3, t)
+        m = re.search(r'#(?P<hashtag>\w+?)\b', t)
+
     t = re.sub('\s\W', ' ', t)
     t = re.sub('\W,\s', ' ', t)
     t = re.sub(r'\W', ' ', t)
@@ -33,7 +47,7 @@ def predict(vector):
     global classifier_dict
     prediction = '1'
     max_proba = -1
-    for label, clf in classifier_dict:
+    for label, clf in classifier_dict.items():
         proba = clf.predict_proba(vector)[0][1]
         if proba > max_proba:
             max_proba = proba
@@ -53,11 +67,11 @@ if __name__ == '__main__':
 
 
     df.user_id = df.user_id.apply(str)
-    # y_train = df.user_id
-    # SAMPLE_THRESHOLD = 50
-    # CLASS_DISTRO = y_train.value_counts()
-    # LABELS = CLASS_DISTRO[CLASS_DISTRO > SAMPLE_THRESHOLD].index
-    # print("{} Classifiers to be trained".format(len(LABELS)))
+    y_train = df.user_id
+    SAMPLE_THRESHOLD = 20
+    CLASS_DISTRO = y_train.value_counts()
+    LABELS = CLASS_DISTRO[CLASS_DISTRO > SAMPLE_THRESHOLD].index
+    print("{} Classifiers to be trained".format(len(LABELS)))
     
     df.tweet = df.tweet.apply(pre_processing)
     x_test_df.tweet = x_test_df.tweet.apply(pre_processing)
@@ -68,7 +82,7 @@ if __name__ == '__main__':
     
     ALL_TWEETS = df.tweet.tolist() + x_test_df.tweet.tolist()
     # TODO: Find a way not to limit max features, or not pruning according to TF
-    vectorizer = TfidfVectorizer(max_features=None, max_df=0.5, ngram_range=(
+    vectorizer = TfidfVectorizer(max_features=None, max_df=0.75, ngram_range=(
         1, 2), lowercase=False, analyzer='word', stop_words=english_stopwords)
     X = vectorizer.fit_transform(ALL_TWEETS)
     
@@ -78,7 +92,7 @@ if __name__ == '__main__':
     y_train = df.user_id
 
     # Set training granularity
-    SAMPLE_THRESHOLD = 50
+    SAMPLE_THRESHOLD = 20
     CLASS_DISTRO = y_train.value_counts()
     LABELS = CLASS_DISTRO[CLASS_DISTRO > SAMPLE_THRESHOLD].index
     SAMPLE_AMOUNT = y_train.shape[0]
@@ -97,6 +111,7 @@ if __name__ == '__main__':
         if (len(classifier_dict) % 10 == 0):
             print("{} Classifiers Trained!".format(len(classifier_dict)))
 
+    del x_train, y_train
     y_pred = list()
     for vector in x_pred:
         y_pred.append(predict(vector))

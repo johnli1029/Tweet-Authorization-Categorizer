@@ -10,4 +10,5 @@
 # Ignore zip files
 *.zip
 
+backup/
 
