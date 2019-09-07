@@ -9,8 +9,8 @@ from multiprocessing import Pool
 
 if __name__ == '__main__':
     # Read Data
-    TRAINSET_PATH = './modified.csv'
-    TEST_SET_PATH = './test_tweets_unlabeled.txt'
+    TRAINSET_PATH = '../dataset/modified.csv'
+    TEST_SET_PATH = '../dataset/test_tweets_unlabeled.txt'
     df = pd.read_csv(TRAINSET_PATH, encoding="utf-8")
     x_test_df = pd.read_csv(TEST_SET_PATH, sep='\n',
                             encoding="utf-8", quoting=3, names=["tweet"])

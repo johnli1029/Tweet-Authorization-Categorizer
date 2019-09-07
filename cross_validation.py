@@ -63,7 +63,7 @@ logging.basicConfig(level=logging.INFO,
 
 
 ##############################################################################
-TRAINSET_PATH = './modified.csv'
+TRAINSET_PATH = './dataset/modified.csv'
 # TEST_SET_PATH = './test_tweets_unlabeled.txt'
 df = pd.read_csv(TRAINSET_PATH, encoding="utf-8")
 # x_test_df = pd.read_csv(TEST_SET_PATH, sep='\n',
