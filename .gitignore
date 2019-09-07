@@ -11,4 +11,4 @@
 *.zip
 
 backup/
-
+__pycache__/

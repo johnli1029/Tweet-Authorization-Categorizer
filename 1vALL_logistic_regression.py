@@ -1,47 +1,11 @@
 import numpy as np  # linear algebra
 import pandas as pd  # data processing, CSV file I/O (e.g. pd.read_csv)
 import math
-import re
-import nltk as nlp
+from feature_engineering import pre_processing
 from nltk.corpus import stopwords
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import accuracy_score
 from multiprocessing import Pool
-
-# IMPORTANT: Tweets Preprocessing
-
-
-def pre_processing(t):
-    HTTP_URL_PATTERN = r'((http|ftp|https):\/\/)?([\w-]+(?:(?:\.[\w-]{2,})+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?'
-    t = t.strip()
-    t = re.sub(HTTP_URL_PATTERN, ' HAVELINK ', t)  # Increase URL weight
-    t = re.sub(r'@handle', ' ATSOMEBODY ', t)  # Deal with @handle
-    t = re.sub(r'^RT', ' APURERETWEET ', t)
-    t = re.sub(r'RT(?!\w)', ' WITHARETWEET ', t)
-
-    # Find hashtag and emphasize it
-    m = re.search(r'#(?P<hashtag>\w+?)\b', t)
-    while m is not None:
-        hashtag = m.group('hashtag')
-        t = re.sub(r'#'+hashtag, (' '+hashtag+' ')*3, t)
-        m = re.search(r'#(?P<hashtag>\w+?)\b', t)
-
-    t = re.sub('\s\W', ' ', t)
-    t = re.sub('\W,\s', ' ', t)
-    t = re.sub(r'\W', ' ', t)
-    t = re.sub("\d+", " ", t)
-    t = re.sub('\s+', ' ', t)
-    t = re.sub('[!@#$_]', ' ', t)
-    t = t.lower()
-
-    lemma = nlp.WordNetLemmatizer()
-    stemmed_tweet = ""
-    for word in t.split():
-        stemmed_tweet += lemma.lemmatize(word)
-        stemmed_tweet += " "
-    return stemmed_tweet.strip()
 
 def predict(vector):
     global classifier_dict
@@ -67,14 +31,16 @@ if __name__ == '__main__':
 
 
     df.user_id = df.user_id.apply(str)
-    y_train = df.user_id
-    SAMPLE_THRESHOLD = 20
-    CLASS_DISTRO = y_train.value_counts()
-    LABELS = CLASS_DISTRO[CLASS_DISTRO > SAMPLE_THRESHOLD].index
-    print("{} Classifiers to be trained".format(len(LABELS)))
+    # SAMPLE_THRESHOLD = 20
+    # CLASS_DISTRO = y_train.value_counts()
+    # LABELS = CLASS_DISTRO[CLASS_DISTRO > SAMPLE_THRESHOLD].index
+    # print("{} Classifiers to be trained".format(len(LABELS)))
     
-    df.tweet = df.tweet.apply(pre_processing)
-    x_test_df.tweet = x_test_df.tweet.apply(pre_processing)
+    PROCESS_AMOUNT = 10
+    with Pool(processes=PROCESS_AMOUNT) as pool:
+        df.tweet = pool.map(pre_processing, df.tweet)
+        x_test_df.tweet = pool.map(pre_processing, x_test_df.tweet)
+    print("Tweet Preprocessing Done!")
 
     # remove non important words such as 'a', 'the', 'that'
     # nlp.download("stopwords")  # stopwords = (irrelavent words)
