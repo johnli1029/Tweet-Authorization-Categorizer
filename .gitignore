@@ -12,3 +12,4 @@
 
 backup/
 __pycache__/
+nohup.out

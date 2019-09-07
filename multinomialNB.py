@@ -4,7 +4,7 @@ import math
 from feature_engineering import pre_processing
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer, HashingVectorizer
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import MultinomialNB, ComplementNB
 from multiprocessing import Pool
 
 if __name__ == '__main__':
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     # X = vectorizer.fit_transform(ALL_TWEETS)
     # print("TF-IDF Tokenizer Done!")
     
-    vectorizer = HashingVectorizer(decode_error='ignore', n_features=2**14, alternate_sign=False,
+    vectorizer = HashingVectorizer(decode_error='ignore', n_features=2**15, alternate_sign=False,
                                    lowercase=False, analyzer='word', stop_words=english_stopwords)
 
     ### Important: Training
@@ -43,8 +43,8 @@ if __name__ == '__main__':
     # y_train = df.user_id
 
 
-    batch_size = 20000
-    clf = MultinomialNB()
+    batch_size = 170000
+    clf = ComplementNB()
     all_classes = df.user_id.value_counts().index
     iteration = df.shape[0] // batch_size + 1
     for i in range(iteration):
