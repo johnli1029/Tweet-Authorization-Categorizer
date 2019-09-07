@@ -48,6 +48,7 @@ if __name__ == '__main__':
     clf = LogisticRegression(C=2, solver='lbfgs', max_iter=1000, class_weight='balanced', multi_class='multinomial')
     clf.fit(x_train, y_train)
 
+    x_test = vectorizer.transform(x_test_df.tweet)
     y_pred = clf.predict(x_test)
 
     output = pd.DataFrame({'Id': range(1, x_test_df.shape[0] + 1),
