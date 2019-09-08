@@ -1,0 +1,56 @@
+None
+(328932, 2)
+328932 tweets
+2 categories
+
+Performing grid search...
+pipeline: ['tfidf', 'clf']
+parameters:
+{'clf__C': (1.0, 2.0, 3.0),
+ 'clf__class_weight': ({1: 10}, {1: 20}, {1: 30}, {1: 50}),
+ 'clf__solver': ('lbfgs',),
+ 'tfidf__max_features': (None, 50000, 100000, 500000),
+ 'tfidf__ngram_range': ((1, 1), (1, 2))}
+Fitting 5 folds for each of 96 candidates, totalling 480 fits
+[Parallel(n_jobs=-1)]: Using backend LokyBackend with 16 concurrent workers.
+[Parallel(n_jobs=-1)]: Done  18 tasks      | elapsed:  2.6min
+[Parallel(n_jobs=-1)]: Done 168 tasks      | elapsed: 20.6min
+[Parallel(n_jobs=-1)]: Done 418 tasks      | elapsed: 57.3min
+[Parallel(n_jobs=-1)]: Done 480 out of 480 | elapsed: 66.8min finished
+done in 4028.853s
+
+Best score: 0.061
+Best parameters set:
+	clf__C: 3.0
+	clf__class_weight: {1: 20}
+	clf__solver: 'lbfgs'
+	tfidf__max_features: 100000
+	tfidf__ngram_range: (1, 2)
+None
+(328932, 2)
+328932 tweets
+2 categories
+
+Performing grid search...
+pipeline: ['tfidf', 'clf']
+parameters:
+{'clf__C': (2.0, 3.0, 5.0, 10.0),
+ 'clf__class_weight': ({1: 10}, {1: 20}, {1: 30}, {1: 50}),
+ 'clf__solver': ('lbfgs',),
+ 'tfidf__max_features': (150000, 100000, 200000),
+ 'tfidf__ngram_range': ((1, 1), (1, 2))}
+Fitting 5 folds for each of 96 candidates, totalling 480 fits
+[Parallel(n_jobs=-1)]: Using backend LokyBackend with 16 concurrent workers.
+[Parallel(n_jobs=-1)]: Done  18 tasks      | elapsed:  2.8min
+[Parallel(n_jobs=-1)]: Done 168 tasks      | elapsed: 23.0min
+[Parallel(n_jobs=-1)]: Done 418 tasks      | elapsed: 63.4min
+[Parallel(n_jobs=-1)]: Done 480 out of 480 | elapsed: 75.0min finished
+done in 4518.967s
+
+Best score: 0.062
+Best parameters set:
+	clf__C: 10.0
+	clf__class_weight: {1: 20}
+	clf__solver: 'lbfgs'
+	tfidf__max_features: 100000
+	tfidf__ngram_range: (1, 2)
